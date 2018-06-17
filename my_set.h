@@ -41,15 +41,19 @@ class set
         BaseNode* ptr;
 
     public:
+        Iterator();
         explicit Iterator(BaseNode* ptr);
 
         template <typename V>
         Iterator(Iterator<V> const& other);
 
         U& operator*() const;
+        U* operator->() const;
 
         bool operator==(Iterator const& other) const;
         bool operator!=(Iterator const& other) const;
+
+        Iterator& operator=(Iterator const& other);
 
         Iterator& operator++();
         Iterator operator++(int);
@@ -60,9 +64,10 @@ class set
     };
 
 public:
-    using iterator = Iterator<T>;
+    using iterator = Iterator<T const>;
     using const_iterator = Iterator<T const>;
     using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
 private:
     size_t siz;
@@ -90,12 +95,14 @@ public:
     size_t size() const;
     void clear();
 
-    iterator begin();
-    const_iterator begin() const;
-    iterator end();
-    const_iterator end() const;
-    reverse_iterator rbegin();
-    reverse_iterator rend();
+    iterator begin() const;
+    iterator end() const;
+    const_iterator cbegin() const;
+    const_iterator cend() const;
+    reverse_iterator rbegin() const;
+    reverse_iterator rend() const;
+    const_reverse_iterator crbegin() const;
+    const_reverse_iterator crend() const;
 
     void swap(set<T> &other);
 };
@@ -255,6 +262,25 @@ set<T>::Iterator<U> set<T>::Iterator<U>::operator--(int)
     return tmp;
 }
 
+template<typename T>
+template<typename U>
+U *set<T>::Iterator<U>::operator->() const {
+    return &(dynamic_cast<Node*>(ptr)->key);
+}
+
+template<typename T>
+template<typename U>
+typename set<T>::template Iterator<U> &set<T>::Iterator<U>::operator=(const set<T>::Iterator<U> &other)
+{
+    ptr = other.ptr;
+    return *this;
+}
+
+template<typename T>
+template<typename U>
+set<T>::Iterator<U>::Iterator() : ptr(nullptr)
+{}
+
 
 /// SET IMPLEMENTATION =======================================================================
 
@@ -281,23 +307,9 @@ set<T>::~set()
     delete root;
 }
 
-template <typename T>
-typename set<T>::const_iterator set<T>::begin() const
-{
-    BaseNode* cur = root;
-    while (cur->left_child)
-        cur = cur->left_child;
-    return set<T>::const_iterator(cur);
-}
 
 template <typename T>
-typename set<T>::const_iterator set<T>::end() const
-{
-    return set<T>::const_iterator(root);
-}
-
-template <typename T>
-typename set<T>::iterator set<T>::begin()
+typename set<T>::iterator set<T>::begin() const
 {
     BaseNode* cur = root;
     while (cur->left_child)
@@ -306,19 +318,31 @@ typename set<T>::iterator set<T>::begin()
 }
 
 template <typename T>
-typename set<T>::iterator set<T>::end()
+typename set<T>::iterator set<T>::end() const
 {
     return set<T>::iterator(root);
 }
 
 template <typename T>
-typename set<T>::reverse_iterator set<T>::rbegin()
+typename set<T>::reverse_iterator set<T>::rbegin() const
 {
     return set<T>::reverse_iterator(end());
 }
 
 template <typename T>
-typename set<T>::reverse_iterator set<T>::rend()
+typename set<T>::const_reverse_iterator set<T>::crend() const
+{
+    return set<T>::const_reverse_iterator(set<T>::iterator(begin()));
+}
+
+template <typename T>
+typename set<T>::const_reverse_iterator set<T>::crbegin() const
+{
+    return set<T>::const_reverse_iterator(end());
+}
+
+template <typename T>
+typename set<T>::reverse_iterator set<T>::rend() const
 {
     return set<T>::reverse_iterator(set<T>::iterator(begin()));
 }
@@ -519,6 +543,23 @@ void set<T>::swap(set<T> &other)
 {
     std::swap(siz, other.siz);
     std::swap(root, other.root);
+}
+
+template<typename T>
+typename set<T>::const_iterator set<T>::cbegin() const {
+    return set::const_iterator(begin());
+}
+
+template<typename T>
+typename set<T>::const_iterator set<T>::cend() const {
+    return set::const_iterator(end());
+}
+
+template<typename T>
+set<T>& set<T>::operator=(set<T> const &other) {
+    set<T> tmp(other);
+    swap(tmp);
+    return *this;
 }
 
 template <typename T>

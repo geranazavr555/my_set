@@ -931,3 +931,57 @@ TEST(exceptions, empty_copy)
     set<int> b(a);
     ASSERT_TRUE(true);
 }
+
+struct ArrowTest
+{
+    int x;
+
+    ArrowTest() : x(7) {}
+
+    friend bool operator<(const ArrowTest &a, const ArrowTest &b) {
+        return a.x < b.x;
+    }
+
+    friend bool operator>(const ArrowTest &a, const ArrowTest &b) {
+        return a.x > b.x;
+    }
+
+    friend bool operator==(const ArrowTest &a, const ArrowTest &b) {
+        return !(a < b) && !(a > b);
+    }
+
+    friend bool operator!=(const ArrowTest &a, const ArrowTest &b) {
+        return !(a == b);
+    }
+
+    friend bool operator<=(const ArrowTest &a, const ArrowTest &b) {
+        return (a < b) || (a == b);
+    }
+
+    int test() const
+    {
+        return -x;
+    }
+};
+
+TEST(correctness, operator_arrow)
+{
+    set<ArrowTest> q;
+    q.insert(ArrowTest());
+    ASSERT_EQ((q.begin())->test(), -7);
+}
+
+TEST(iterators, empty_iterator)
+{
+    set<int>::iterator it;
+    ASSERT_TRUE(true);
+}
+
+TEST(iterators, assignment)
+{
+    set<int>::iterator it;
+    set<int> q;
+    q.insert(1);
+    it = q.begin();
+    ASSERT_TRUE((*it) == 1);
+}
