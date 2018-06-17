@@ -924,3 +924,10 @@ TEST(exceptions, no_throw) {
         ASSERT_TRUE(false);
     }
 }
+
+TEST(exceptions, empty_copy)
+{
+    set<int> a;
+    set<int> b(a);
+    ASSERT_TRUE(true);
+}

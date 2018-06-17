@@ -105,9 +105,9 @@ public:
 
 template <typename T>
 set<T>::BaseNode::BaseNode()
-        : left_child(nullptr),
-          right_child(nullptr),
-          parent(nullptr)
+        : parent(nullptr),
+          left_child(nullptr),
+          right_child(nullptr)
 {}
 
 template <typename T>
@@ -314,9 +314,6 @@ typename set<T>::iterator set<T>::end()
 template <typename T>
 typename set<T>::reverse_iterator set<T>::rbegin()
 {
-    /*BaseNode* cur = root;
-    while (cur->left_child)
-        cur = cur->left_child;*/
     return set<T>::reverse_iterator(end());
 }
 
