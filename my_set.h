@@ -39,7 +39,7 @@ class set
         BaseNode* ptr;
 
     public:
-        Iterator(); // private
+        Iterator();
         explicit Iterator(BaseNode* ptr);
 
         template <typename V>
@@ -48,8 +48,10 @@ class set
         U& operator*() const;
         U* operator->() const;
 
-        bool operator==(Iterator const& other) const;
-        bool operator!=(Iterator const& other) const;
+        template <typename V>
+        bool operator==(Iterator<V> const& other) const;
+        template <typename V>
+        bool operator!=(Iterator<V> const& other) const;
 
         Iterator& operator=(Iterator const& other);
 
@@ -137,18 +139,19 @@ set<T>::BaseNode::~BaseNode()
         delete right_child;
 }
 
-// V
 template <typename T>
 template <typename U>
-bool set<T>::Iterator<U>::operator==(Iterator<U> const &other) const
+template <typename V>
+bool set<T>::Iterator<U>::operator==(Iterator<V> const &other) const
 {
     return ptr == other.ptr;
 }
 
-// V
+
 template <typename T>
 template <typename U>
-bool set<T>::Iterator<U>::operator!=(Iterator<U> const &other) const
+template <typename V>
+bool set<T>::Iterator<U>::operator!=(Iterator<V> const &other) const
 {
     return ptr != other.ptr;
 }
@@ -508,7 +511,7 @@ typename set<T>::const_iterator set<T>::lower_bound(key_type const &x) const
 }
 
 template <typename T>
-typename set<T>::const_iterator set<T>::upper_bound(key_type const &x) const  // T?
+typename set<T>::const_iterator set<T>::upper_bound(T const &x) const
 {
     // Итератор первого > x
 
