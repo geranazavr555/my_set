@@ -14,6 +14,13 @@
 #include <iterator>
 #include <random>
 
+TEST(iterators, single_element_begin_end)
+{
+    set<int> q;
+    q.insert(1);
+    ASSERT_TRUE(++(q.begin()) == q.end());
+}
+
 TEST(correctness, single_element_insert)
 {
     set<int> q;

@@ -36,7 +36,7 @@ class set
         friend class set;
 
     private:
-        BaseNode* ptr; // static mem
+        BaseNode* ptr;
 
     public:
         Iterator(); // private
@@ -67,9 +67,10 @@ public:
 
 private:
     size_t siz;
-    BaseNode* root;
+    BaseNode root;
 
     const_iterator detach(const_iterator iter);
+    BaseNode* get_root_pointer() const;
 
 public:
 
@@ -277,13 +278,13 @@ set<T>::Iterator<U>::Iterator() : ptr(nullptr)
 template <typename T>
 set<T>::set()
         : siz(0),
-          root(new BaseNode()) // static mem
+          root()
 {}
 
 template <typename T>
 set<T>::set(set const &other)
         : siz(other.siz),
-          root(new BaseNode()) // 
+          root()
 {
     for (auto x : other)
     {
@@ -294,14 +295,15 @@ set<T>::set(set const &other)
 template <typename T>
 set<T>::~set()
 {
-    delete root;
+    delete root.left_child;
+    root.left_child = nullptr;
 }
 
 
 template <typename T>
 typename set<T>::iterator set<T>::begin() const
 {
-    BaseNode* cur = root;
+    BaseNode * cur = get_root_pointer();
     while (cur->left_child)
         cur = cur->left_child;
     return set<T>::iterator(cur);
@@ -310,7 +312,7 @@ typename set<T>::iterator set<T>::begin() const
 template <typename T>
 typename set<T>::iterator set<T>::end() const
 {
-    return set<T>::iterator(root);
+    return set<T>::iterator(get_root_pointer());
 }
 
 template <typename T>
@@ -352,14 +354,14 @@ size_t set<T>::size() const
 template <typename T>
 std::pair<typename set<T>::iterator, bool> set<T>::insert(key_type const &x)
 {
-    if (!root->left_child)
+    if (!root.left_child)
     {
-        root->left_child = new Node(x, root);
+        root.left_child = new Node(x, &root);
         siz++;
-        return { iterator(root->left_child), true };
+        return { iterator(root.left_child), true };
     }
 
-    set<T>::BaseNode* cur = root->left_child;
+    set<T>::BaseNode* cur = root.left_child;
     while (true)
     {
         if (dynamic_cast<Node*>(cur)->key == x)
@@ -458,7 +460,7 @@ typename set<T>::iterator set<T>::erase(set<T>::const_iterator iter)
 template <typename T>
 typename set<T>::const_iterator set<T>::find(key_type const &x) const
 {
-    BaseNode* cur = root->left_child;
+    BaseNode* cur = root.left_child;
     while (true)
     {
         if (!cur)
@@ -477,9 +479,9 @@ template <typename T>
 void set<T>::clear()
 {
     siz = 0;
-    if (root->left_child)
-        delete root->left_child;
-    root->left_child = nullptr;
+    if (root.left_child)
+        delete root.left_child;
+    root.left_child = nullptr;
 }
 
 template <typename T>
@@ -487,11 +489,11 @@ typename set<T>::const_iterator set<T>::lower_bound(key_type const &x) const
 {
     // Итератор первого >= x
 
-    BaseNode* cur = root->left_child;
+    BaseNode* cur = root.left_child;
     if (!cur)
         return end();
 
-    BaseNode* ans = root;
+    BaseNode* ans = get_root_pointer();
     while (cur)
     {
         if (dynamic_cast<Node*>(cur)->key < x)
@@ -510,11 +512,11 @@ typename set<T>::const_iterator set<T>::upper_bound(key_type const &x) const  //
 {
     // Итератор первого > x
 
-    BaseNode* cur = root->left_child;
+    BaseNode* cur = root.left_child;
     if (!cur)
         return end();
 
-    BaseNode* ans = root;
+    BaseNode* ans = get_root_pointer();
     while (cur)
     {
         if (dynamic_cast<Node*>(cur)->key <= x)
@@ -532,7 +534,13 @@ template<typename T>
 void set<T>::swap(set<T> &other)
 {
     std::swap(siz, other.siz);
-    std::swap(root, other.root);
+    if (root.left_child && other.root.left_child)
+        std::swap(root.left_child->parent, other.root.left_child->parent);
+    else if (root.left_child)
+        root.left_child->parent = other.get_root_pointer();
+    else if (other.root.left_child)
+        other.root.left_child->parent = get_root_pointer();
+    std::swap(root.left_child, other.root.left_child);
 }
 
 template<typename T>
@@ -549,6 +557,11 @@ template<typename T>
 set<T>& set<T>::operator=(set<T> other) {
     swap(other);
     return *this;
+}
+
+template<typename T>
+typename set<T>::BaseNode *set<T>::get_root_pointer() const {
+    return const_cast<typename set<T>::BaseNode*>(&root);
 }
 
 template <typename T>
