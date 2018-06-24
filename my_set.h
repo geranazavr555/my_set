@@ -196,7 +196,7 @@ template <typename T>
 template <typename U>
 U& set<T>::Iterator<U>::operator*() const
 {
-    return (dynamic_cast<Node*>(ptr))->key;
+    return (static_cast<Node*>(ptr))->key;
 }
 
 
@@ -259,7 +259,7 @@ set<T>::Iterator<U> set<T>::Iterator<U>::operator--(int)
 template<typename T>
 template<typename U>
 U *set<T>::Iterator<U>::operator->() const {
-    return &(dynamic_cast<Node*>(ptr)->key);
+    return &(static_cast<Node*>(ptr)->key);
 }
 
 template<typename T>
@@ -367,9 +367,9 @@ std::pair<typename set<T>::iterator, bool> set<T>::insert(key_type const &x)
     set<T>::BaseNode* cur = root.left_child;
     while (true)
     {
-        if (dynamic_cast<Node*>(cur)->key == x)
+        if (static_cast<Node*>(cur)->key == x)
             return { iterator(cur), false };
-        if (dynamic_cast<Node*>(cur)->key > x)
+        if (static_cast<Node*>(cur)->key > x)
         {
             if (cur->left_child)
                 cur = cur->left_child;
@@ -380,7 +380,7 @@ std::pair<typename set<T>::iterator, bool> set<T>::insert(key_type const &x)
                 return { iterator(cur->left_child), true };
             }
         }
-        if (dynamic_cast<Node*>(cur)->key < x)
+        if (static_cast<Node*>(cur)->key < x)
         {
             if (cur->right_child)
                 cur = cur->right_child;
@@ -469,11 +469,11 @@ typename set<T>::const_iterator set<T>::find(key_type const &x) const
         if (!cur)
             return end();
 
-        if (dynamic_cast<Node*>(cur)->key == x)
+        if (static_cast<Node*>(cur)->key == x)
             return set<T>::const_iterator(cur);
-        else if (dynamic_cast<Node*>(cur)->key < x)
+        else if (static_cast<Node*>(cur)->key < x)
             cur = cur->right_child;
-        else if (dynamic_cast<Node*>(cur)->key > x)
+        else if (static_cast<Node*>(cur)->key > x)
             cur = cur->left_child;
     }
 }
@@ -499,7 +499,7 @@ typename set<T>::const_iterator set<T>::lower_bound(key_type const &x) const
     BaseNode* ans = get_root_pointer();
     while (cur)
     {
-        if (dynamic_cast<Node*>(cur)->key < x)
+        if (static_cast<Node*>(cur)->key < x)
             cur = cur->right_child;
         else
         {
@@ -522,7 +522,7 @@ typename set<T>::const_iterator set<T>::upper_bound(T const &x) const
     BaseNode* ans = get_root_pointer();
     while (cur)
     {
-        if (dynamic_cast<Node*>(cur)->key <= x)
+        if (static_cast<Node*>(cur)->key <= x)
             cur = cur->right_child;
         else
         {
