@@ -8,7 +8,7 @@
 template <typename T>
 class set
 {
-    typedef T key_type;
+    typedef T value_type;
 
     struct BaseNode
     {
@@ -23,11 +23,11 @@ class set
 
     struct Node : public BaseNode
     {
-        key_type key;
+        value_type key;
 
-        Node(key_type const& key) ;
-        Node(key_type const& key, BaseNode* parent) ;
-        Node(key_type const& key, BaseNode* parent, BaseNode* left, BaseNode* right) ;
+        Node(value_type const& key) ;
+        Node(value_type const& key, BaseNode* parent) ;
+        Node(value_type const& key, BaseNode* parent, BaseNode* left, BaseNode* right) ;
     };
 
     template <typename U>
@@ -84,11 +84,11 @@ public:
     set& operator=(set other);
 
 
-    std::pair<iterator, bool> insert(key_type const& x);
+    std::pair<iterator, bool> insert(value_type const& x);
     iterator erase(const_iterator iter);
-    const_iterator find(key_type const& x) const;
-    const_iterator lower_bound(key_type const& x) const;
-    const_iterator upper_bound(key_type const& x) const;
+    const_iterator find(value_type const& x) const;
+    const_iterator lower_bound(value_type const& x) const;
+    const_iterator upper_bound(value_type const& x) const;
 
     bool empty() const;
     size_t size() const;
@@ -159,20 +159,20 @@ bool set<T>::Iterator<U>::operator!=(Iterator<V> const &other) const
 /// NODE IMPLEMENTATION ======================================================================
 
 template <typename T>
-set<T>::Node::Node(set::key_type const& key)
+set<T>::Node::Node(set::value_type const& key)
         : set::BaseNode(),
           key(key)
 {}
 
 template <typename T>
-set<T>::Node::Node(set::key_type const& key, BaseNode* parent)
+set<T>::Node::Node(set::value_type const& key, BaseNode* parent)
         : set::BaseNode(parent),
           key(key)
 {}
 
 
 template <typename T>
-set<T>::Node::Node(set::key_type const& key, BaseNode* parent, BaseNode* left_child, BaseNode* right_child)
+set<T>::Node::Node(set::value_type const& key, BaseNode* parent, BaseNode* left_child, BaseNode* right_child)
         : set::BaseNode(parent, left_child, right_child),
           key(key)
 {}
@@ -355,7 +355,7 @@ size_t set<T>::size() const
 }
 
 template <typename T>
-std::pair<typename set<T>::iterator, bool> set<T>::insert(key_type const &x)
+std::pair<typename set<T>::iterator, bool> set<T>::insert(value_type const &x)
 {
     if (!root.left_child)
     {
@@ -461,7 +461,7 @@ typename set<T>::iterator set<T>::erase(set<T>::const_iterator iter)
 }
 
 template <typename T>
-typename set<T>::const_iterator set<T>::find(key_type const &x) const
+typename set<T>::const_iterator set<T>::find(value_type const &x) const
 {
     BaseNode* cur = root.left_child;
     while (true)
@@ -488,7 +488,7 @@ void set<T>::clear()
 }
 
 template <typename T>
-typename set<T>::const_iterator set<T>::lower_bound(key_type const &x) const
+typename set<T>::const_iterator set<T>::lower_bound(value_type const &x) const
 {
     // Итератор первого >= x
 
