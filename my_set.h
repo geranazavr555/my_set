@@ -10,8 +10,6 @@ class set
 {
     typedef T key_type;
 
-    struct BaseNode;
-
     struct BaseNode
     {
         BaseNode *parent, *left_child, *right_child;
@@ -38,10 +36,10 @@ class set
         friend class set;
 
     private:
-        BaseNode* ptr;
+        BaseNode* ptr; // static mem
 
     public:
-        Iterator();
+        Iterator(); // private
         explicit Iterator(BaseNode* ptr);
 
         template <typename V>
@@ -59,8 +57,6 @@ class set
         Iterator operator++(int);
         Iterator& operator--();
         Iterator operator--(int);
-
-        void up();
     };
 
 public:
@@ -82,7 +78,7 @@ public:
 
     ~set();
 
-    set& operator=(set const& other);
+    set& operator=(set other);
 
 
     std::pair<iterator, bool> insert(key_type const& x);
@@ -140,6 +136,7 @@ set<T>::BaseNode::~BaseNode()
         delete right_child;
 }
 
+// V
 template <typename T>
 template <typename U>
 bool set<T>::Iterator<U>::operator==(Iterator<U> const &other) const
@@ -147,7 +144,7 @@ bool set<T>::Iterator<U>::operator==(Iterator<U> const &other) const
     return ptr == other.ptr;
 }
 
-
+// V
 template <typename T>
 template <typename U>
 bool set<T>::Iterator<U>::operator!=(Iterator<U> const &other) const
@@ -196,13 +193,6 @@ template <typename U>
 U& set<T>::Iterator<U>::operator*() const
 {
     return (dynamic_cast<Node*>(ptr))->key;
-}
-
-template <typename T>
-template <typename U>
-void set<T>::Iterator<U>::up()
-{
-    ptr = ptr->parent;
 }
 
 
@@ -287,13 +277,13 @@ set<T>::Iterator<U>::Iterator() : ptr(nullptr)
 template <typename T>
 set<T>::set()
         : siz(0),
-          root(new BaseNode())
+          root(new BaseNode()) // static mem
 {}
 
 template <typename T>
 set<T>::set(set const &other)
         : siz(other.siz),
-          root(new BaseNode())
+          root(new BaseNode()) // 
 {
     for (auto x : other)
     {
@@ -516,7 +506,7 @@ typename set<T>::const_iterator set<T>::lower_bound(key_type const &x) const
 }
 
 template <typename T>
-typename set<T>::const_iterator set<T>::upper_bound(key_type const &x) const
+typename set<T>::const_iterator set<T>::upper_bound(key_type const &x) const  // T?
 {
     // Итератор первого > x
 
@@ -556,9 +546,8 @@ typename set<T>::const_iterator set<T>::cend() const {
 }
 
 template<typename T>
-set<T>& set<T>::operator=(set<T> const &other) {
-    set<T> tmp(other);
-    swap(tmp);
+set<T>& set<T>::operator=(set<T> other) {
+    swap(other);
     return *this;
 }
 
