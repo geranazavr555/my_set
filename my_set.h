@@ -564,7 +564,7 @@ set<T>& set<T>::operator=(set<T> other) {
 
 template<typename T>
 typename set<T>::BaseNode *set<T>::get_root_pointer() const {
-    return const_cast<typename set<T>::BaseNode*>(&root);
+    return const_cast<set<T>::BaseNode*>(&root);
 }
 
 template <typename T>
